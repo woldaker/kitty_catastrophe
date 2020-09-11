@@ -1,0 +1,29 @@
+/*
+!.gitignore
+.DS_Store
+
+# DO ignore IDE/dev settings
+.vscode/
+KittyCatastrophe.code-workspace
+
+# Unreal Engine may try and create a .uasset file when something is added
+#   to the Assets/ directory.  They can be ignored.
+!ExternalAssets/
+ExternalAssets/*.uasset
+
+Binaries/
+Build/
+Deprecated/
+DerivedDataCache/
+Intermediate/
+Saved/
+OLD/
+
+!Config/
+!Content/
+!Source/
+
+!KittyCatastrophe.png
+!KittyCatastrophe.uproject
+!README.md
+
