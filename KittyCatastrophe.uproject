@@ -1,0 +1,21 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{1811139E-5B40-8814-B46E-A5BC83FCE296}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "KittyCatastrophe",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	],
+	"TargetPlatforms": [
+		"Android",
+		"IOS",
+		"MacNoEditor"
+	]
+}
