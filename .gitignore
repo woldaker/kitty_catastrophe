@@ -7,9 +7,9 @@
 KittyCatastrophe.code-workspace
 
 # Unreal Engine may try and create a .uasset file when something is added
-#   to the Assets/ directory.  They can be ignored.
-!ExternalAssets/
-ExternalAssets/*.uasset
+#   to the ContentSource/ directory.  They can be ignored.
+!ContentSource/
+ContentSource/*.uasset
 
 Binaries/
 Build/
@@ -20,10 +20,14 @@ Saved/
 OLD/
 
 !Config/
+!Config/Tags/
+!Config/*.ini
+!Config/Tags/*.ini
 !Content/
+# DO ignore Content/Developers/
+Content/Developers/
 !Source/
 
 !KittyCatastrophe.png
 !KittyCatastrophe.uproject
 !README.md
-

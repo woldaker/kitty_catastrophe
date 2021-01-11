@@ -1,69 +1,109 @@
 // Copyright Wesley H. Oldaker <wesleyoldaker@gmail.com>
 
 #pragma once
-
-#include "Engine.h"
+// Engine
+#include "Engine/Engine.h"
+//#include "Containers/Array.h"
 #include "Containers/UnrealString.h"
-#include "Utils/Constants.h"
+#include "HAL/Platform.h"
+#include "Logging/LogMacros.h"
+#include "Logging/LogVerbosity.h"
+#include "Math/Color.h"
+#include "Misc/CoreMiscDefines.h"
+#include "Templates/UnrealTemplate.h"
+// KC
+#include "Config/Constants/Log.h"
+#include "KittyCatastrophe/KittyCatastrophe.h"
 
 
-namespace Log
+namespace Log {
+namespace Private {
+static void LogToScreen( float const duration, FColor const color, FString const& message )
 {
-namespace Internal
-{
-
-static void LogToScreen(float const duration, FColor const color, FString const& message)
-{
-    if (!GEngine)
+    if (GEngine)
     {
-        UE_LOG(LogTemp, Warning, TEXT("GEngine not available for printing to screen.  Message: '%s'"), *message);
-        return;
+        GEngine->AddOnScreenDebugMessage( INDEX_NONE, duration, color, message );
     }
 
-    GEngine->AddOnScreenDebugMessage(INDEX_NONE, duration, color, message);
+    UE_LOG(KCLog, Display, TEXT("%s"), *message);
 }
 
-
-static FString FormatString(FString const& message)
+// base case
+inline static FString const& FormatString( FString const& message )
 {
     return message;
 }
 
-
+// recursive case
 template <typename... Args>
-static FString FormatString(FString const& message, Args&&... args)
+static FString const FormatString( FString const& message, Args&&... args )
 {
-    TArray<FStringFormatArg> format_args {Forward<Args>(args)...};
-    return FString::Format(*message, format_args);
+    return FString::Format( *message, {Forward<Args>(args)...} );
 }
+} //ns Log::Private
 
-} // END Log::Internal
+/*
+template<typename... Args>
+static FString const FormatString(Args&&... args)
+{
+    return Private::FormatString(KCINFO, Forward<Args>(args)...);
+}
+*/
 
+// Convenience Log:: functions
+template<typename... Args>
+static void Debug(FString const& message, Args&&... args)
+{
+    namespace LOG = KC::LOG::DEBUG;
+    
+    FString const formatted_message =
+        Private::FormatString( message, Forward<Args>(args)... );
+    Private::LogToScreen( LOG::DURATION, LOG::COLOR, formatted_message );
+    UE_LOG(KCLog, Verbose, TEXT("%s"), *formatted_message);
+}
 
 template<typename... Args>
 static void Info(FString const& message, Args&&... args)
 {
-    FString formatted_message = Internal::FormatString(message, Forward<Args>(args)...);
-    Internal::LogToScreen(Constants::Log::Info::MSG_DURATION, Constants::Log::Info::MSG_COLOR, formatted_message);
-    UE_LOG(LogTemp, Display, TEXT("%s"), *formatted_message);
+    namespace LOG = KC::LOG::INFO;
+    
+    FString const formatted_message =
+        Private::FormatString( message, Forward<Args>(args)... );
+    Private::LogToScreen( LOG::DURATION, LOG::COLOR, formatted_message );
+    UE_LOG(KCLog, Log, TEXT("%s"), *formatted_message);
 }
-
 
 template<typename... Args>
 static void Warn(FString const& message, Args&&... args)
 {
-    FString formatted_message = Internal::FormatString(message, Forward<Args>(args)...);
-    Internal::LogToScreen(Constants::Log::Warn::MSG_DURATION, Constants::Log::Warn::MSG_COLOR, formatted_message);
-    UE_LOG(LogTemp, Warning, TEXT("%s"), *formatted_message);
+    namespace LOG = KC::LOG::WARN;
+    
+    FString const formatted_message =
+        Private::FormatString( message, Forward<Args>(args)... );
+    Private::LogToScreen( LOG::DURATION, LOG::COLOR, formatted_message );
+    UE_LOG(KCLog, Warning, TEXT("%s"), *formatted_message);
 }
 
+template<typename... Args>
+static void Error( FString const& message, Args&&... args )
+{
+    namespace LOG = KC::LOG::ERROR;
+    
+    FString const formatted_message =
+        Private::FormatString( message, Forward<Args>(args)... );
+    Private::LogToScreen( LOG::DURATION, LOG::COLOR, formatted_message );
+    UE_LOG(KCLog, Error, TEXT("%s"), *formatted_message);
+}
 
 template<typename... Args>
-static void Error(FString const& message, Args&&... args)
+static void Fatal( FString const& message, Args&&... args )
 {
-    FString formatted_message = Internal::FormatString(message, Forward<Args>(args)...);
-    Internal::LogToScreen(Constants::Log::Error::MSG_DURATION, Constants::Log::Error::MSG_COLOR, formatted_message);
-    UE_LOG(LogTemp, Error, TEXT("%s"), *formatted_message);
+    namespace LOG = KC::LOG::FATAL;
+    
+    FString const formatted_message =
+        Private::FormatString( message, Forward<Args>(args)... );
+    Private::LogToScreen( LOG::DURATION, LOG::COLOR, formatted_message );
+    UE_LOG(KCLog, Fatal, TEXT("%s"), *formatted_message);
 }
 
 } // END Log
