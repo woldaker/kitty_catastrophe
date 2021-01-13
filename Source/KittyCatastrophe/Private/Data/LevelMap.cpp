@@ -5,7 +5,6 @@
 #include "Engine/DataTable.h"
 // KC
 #include "Actors/Level/FloorTile.h"
-//#include "Config/Constants/Log.h"
 #include "Config/Constants/Path.h"
 #include "Enums/EFloorTile.h"
 #include "Utils/FileIO.h"
@@ -17,24 +16,27 @@ void ULevelMap::Init( int32 const width, int32 const height )
 {
     namespace MAP = KC::LEVEL::MAP;
     
-    checkf(MAP::IsValidLength(width) && MAP::IsValidLength(height),
-           TEXT(/*KCINFO*/ "Cannot initialize LevelMap to size (%d x %d):  width and height must both be in range [%d - %d]."),
-           width, height, MAP::LENGTH_MIN, MAP::LENGTH_MAX
+    checkf(MAP::IsValidLength( width ) && MAP::IsValidLength( height ),
+           TEXT("Cannot initialize LevelMap to size (%d x %d):  width and height must both be in range [%d - %d]."),
+           width,
+           height,
+           MAP::LENGTH_MIN,
+           MAP::LENGTH_MAX
     );
     
-    Map.SetNum(width);
+    Map.SetNum( width );
     
     for (int32 col = 0; col < width; ++col)
     {
-        Map[col].Tiles.SetNum(height);
+        Map[ col ].Tiles.SetNum( height );
         
         for (int32 row = 0; row < height; ++row)
         {
-            Map[col].Tiles[row] = NewObject<ULevelMapTile>(this);
+            Map[ col ].Tiles[ row ] = NewObject<ULevelMapTile>( this );
         }
     }
     
-    BoundingBox = { FIntPoint::ZeroValue, {width,height} };
+    BoundingBox = { FIntPoint::ZeroValue, { width, height } };
 }
 
 
@@ -43,21 +45,14 @@ bool ULevelMap::TryLoadLevelMapFromFile( FString const& filepath )
     ValidateStringRepr();
     TArray<FString> fileContents;
     
-    if (!UFileIO::TryLoadFileToStringArray(fileContents, filepath))
+    if (!UFileIO::TryLoadFileToStringArray( fileContents, filepath ))
     {
         Log::Error( "Could not read from Map file '{0}'", filepath );
         InvalidateStringRepr();
         return false;
     }
     
-    if (fileContents.Num() == 0)
-    {
-        Log::Error( "Map file '{0}' is empty.", filepath );
-        InvalidateStringRepr();
-        return false;
-    }
-    
-    if (!TryParseMapFileContents(fileContents))
+    if (!TryParseMapFileContents( fileContents ))
     {
         Log::Error( "Could not parse contents of Map file '{0}'", filepath );
         InvalidateStringRepr();
@@ -73,50 +68,64 @@ bool ULevelMap::TryParseMapFileContents( TArray<FString> const& fileContents )
     namespace MAP = KC::LEVEL::MAP;
     namespace KEYVAL = MAP::FILE::KEYVAL;
     
-    static FString const DT_CONTEXT = TEXT("Floor LUT Context");
+    static FString const DT_CONTEXT = TEXT("FloorTile DT Context");
     
     checkf(
         (fileContents.Num() > 0),
-        TEXT(/*KCINFO*/ "LevelMap file contents cannot be empty.")
+        TEXT("LevelMap file contents cannot be empty.")
     );
     
     ValidateStringRepr();
     
-    TArray<FString> map;
-    TArray<FString> details;
+    // Split the file contents into two parts:
+    TArray<FString> mapSection;
+    TArray<FString> keyvalSection;
     
     bool inMap = true;
     int32 mapWidth = 0;
     int32 mapHeight = 0;
+    int32 emptyLineCount = 0;
     
     // Split file contents by the blank line
     for (FString const& line : fileContents)
     {
         if (line.IsEmpty())
         {
+            ++emptyLineCount;
             inMap = false;
-            AppendToStringRepr( TEXT("\n") );
-            continue;
-        }
-        
-        if (inMap)
-        {
-            map.Add( line );
-            mapWidth = FMath::Max( mapWidth, line.Len() );
-            ++mapHeight;
         }
         else
         {
-            details.Add( line );
+            if (inMap)
+            {
+                mapSection.Add( line );
+                mapWidth = FMath::Max( mapWidth, line.Len() );
+                ++mapHeight;
+            }
+            else
+            {
+                keyvalSection.Add( line );
+            }
+            
+            AppendToStringRepr( line );
         }
         
-        AppendToStringRepr( line );
+        AppendToStringRepr( TEXT("\n") );
+    }
+    
+    if (emptyLineCount != 1)
+    {
+        Log::Error(
+            "LevelMap file must contain exactly one empty line, which separates the map tiles from the additional "
+            "map details below it."
+        );
+        return false;
     }
     
     Init( mapWidth, mapHeight );
     
     // Make sure all the strings in the map copy are of max length
-    for (FString& line : map)
+    for (FString& line : mapSection)
     {
         int32 const padLength = (mapWidth - line.Len());
         if (padLength > 0)
@@ -125,10 +134,10 @@ bool ULevelMap::TryParseMapFileContents( TArray<FString> const& fileContents )
         }
     }
     
-    // Must loop through y first due to file getting read row-by-row
+    // Loop through map section
     for (int32 y = 0; y < mapHeight; ++y)
     {
-        FString const& line = map[ y ];
+        FString const& line = mapSection[ y ];
         
         for (int32 x = 0; x < mapWidth; ++x)
         {
@@ -140,7 +149,7 @@ bool ULevelMap::TryParseMapFileContents( TArray<FString> const& fileContents )
                 continue;
             }
             
-            FloorTile::NeighborData const neighborData{ map, x, y };
+            FloorTile::NeighborData const neighborData{ mapSection, x, y };
             
             Map[ x ].Tiles[ y ]->Init(
                 x, y,
@@ -156,13 +165,14 @@ bool ULevelMap::TryParseMapFileContents( TArray<FString> const& fileContents )
     bool hasLitterBox = false;
     bool hasFoodTrough = false;
 
-    for (FString const& detail : details)
+    for (FString const& keyval : keyvalSection)
     {
-        FString key, val;
+        FString key;
+        FString val;
 
-        if (!StringParser::TryKeyVal( detail, key, val ))
+        if (!StringParser::TryKeyVal( keyval, key, val ))
         {
-            Log::Error( "Invalid key=val string: '{0}'.", detail );
+            Log::Error( "Invalid key=val string: '{0}'.", keyval );
             InvalidateStringRepr();
             return false;
         }
@@ -179,26 +189,26 @@ bool ULevelMap::TryParseMapFileContents( TArray<FString> const& fileContents )
             TArray<FIntPoint> range;
             if (!StringParser::TryIntPointRange( val, range ))
             {
-                Log::Error( "Invalid val string: '{0}'.", val );
+                Log::Error( "Invalid LevelMap value string for key '{0}': '{1}'.", key, val );
                 InvalidateStringRepr();
                 return false;
             }
             
-            for (int32 i = 0; (i + 1) < (range.Num() - 1); ++i)
+            for (int32 current = 0, next = 1; next < range.Num(); ++current, ++next)
             {
-                if (!TryAddWallSegment( range[ i ], range[ i+1 ] ))
+                if (!TryAddWallSegment( range[ current ], range[ next ] ))
                 {
                     return false;
                 }
             }
         }
-        else
+        else // not a wall section
         {
             FIntPoint point;
             
             if (!StringParser::TryIntPoint( val, point ))
             {
-                Log::Error( "Invalid value string '{0}'.", val );
+                Log::Error( "Invalid value string for key '{0}': '{1}'.", key, val );
                 InvalidateStringRepr();
                 return false;
             }
@@ -211,6 +221,12 @@ bool ULevelMap::TryParseMapFileContents( TArray<FString> const& fileContents )
             }
             
             ULevelMapTile* maptile = GetMapTileAt( point );
+            
+            if (!maptile)
+            {
+                Log::Error( "Unable to fetch LevelMapTile object at point ({0},{1}).", point.X, point.Y );
+                return false;
+            }
             
             if (key == KEYVAL::LITTERBOX)
             {
@@ -227,16 +243,18 @@ bool ULevelMap::TryParseMapFileContents( TArray<FString> const& fileContents )
                 maptile->SetHasFoodTrough( true );
             }
             else {
-                checkNoEntry();
+                Log::Error( "Invalid key '{0}' in LevelMap file.", key );
+                return false;
             }
         }
     }
 
-    if (!hasLitterBox || !hasFoodTrough)
+    if (!(hasLitterBox && hasFoodTrough))
     {
         Log::Error(
             "Error parsing key=val pairs in Map file: Keys '{0}' and '{1}' must be present.",
-            KEYVAL::LITTERBOX, KEYVAL::FOODTROUGH
+            KEYVAL::LITTERBOX,
+            KEYVAL::FOODTROUGH
         );
         
         InvalidateStringRepr();
@@ -264,8 +282,11 @@ bool ULevelMap::TryAddWallSegment( FWallSegment const wall )
                 pointPair.First;
             
             Log::Warn(
-                "Invalid wall segment {0}: All points on both sides must exist on the map, but point ({1},{2}) does not exist.",
-                wall.ToString(), missingPoint.X, missingPoint.Y
+                "Invalid wall segment {0}: All points on both sides must exist on the map, "
+                "but point ({1},{2}) does not exist.",
+                wall.ToString(),
+                missingPoint.X,
+                missingPoint.Y
             );
             return false;
         }
@@ -279,14 +300,16 @@ bool ULevelMap::TryAddWallSegment( FWallSegment const wall )
         // TODO: remove for production
         checkf(
             tileFirst,
-            TEXT(/*KCINFO*/ "MapTile at ({0},{1}) doesn't exist"),
-            pointPair.First.X, pointPair.First.Y
+            TEXT("MapTile at ({0},{1}) doesn't exist"),
+            pointPair.First.X,
+            pointPair.First.Y
         );
         
         checkf(
             tileSecond,
-            TEXT(/*KCINFO*/ "MapTile at ({0},{1}) doesn't exist"),
-            pointPair.Second.X, pointPair.Second.Y
+            TEXT("MapTile at ({0},{1}) doesn't exist"),
+            pointPair.Second.X,
+            pointPair.Second.Y
         );
      
         if (wall.IsHorizontal())
@@ -333,7 +356,7 @@ ULevelMapTile* ULevelMap::GetMapTileAt( FIntPoint const point )
 {
     checkf(
         ContainsPoint( point, true ),
-        TEXT(/*KCINFO*/ "Map Point (%d,%d) out of range."),
+        TEXT("Map Unit (%d,%d) out of range."),
         point.X, point.Y
     );
     

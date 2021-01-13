@@ -11,32 +11,32 @@
 
 
 namespace KC {
-namespace LOG {
+namespace /*KC::*/ LOG {
 
-namespace DEBUG {
+namespace /*KC::LOG::*/ DEBUG {
 FColor const COLOR = FColor::Emerald;
 constexpr float DURATION = 1.5f;
-} // DEBUG
+} //ns KC::LOG::DEBUG
 
-namespace INFO {
+namespace /*KC::LOG::*/ INFO {
 FColor const COLOR = FColor::Yellow;
 constexpr float DURATION = 2.5f;
-} // INFO
+} //ns KC::LOG::INFO
 
-namespace WARN {
+namespace /*KC::LOG::*/ WARN {
 FColor const COLOR = FColor::Orange;
 constexpr float DURATION = 4.0f;
-} // WARN
+} //ns KC::LOG::WARN
 
-namespace ERROR {
+namespace /*KC::LOG::*/ ERROR {
 FColor const COLOR = FColor::Red;
 constexpr float DURATION = 8.0f;
-} // ERROR
+} //ns KC::LOG::ERROR
 
-namespace FATAL {
+namespace /*KC::LOG::*/ FATAL {
 FColor const COLOR = FColor::Magenta;
 constexpr float DURATION = 10.0f;
-} // FATAL
+} //ns KC::LOG::FATAL
 
-}
-}
+} //ns KC::LOG
+} //ns KC

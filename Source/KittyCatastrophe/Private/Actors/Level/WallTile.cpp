@@ -3,12 +3,11 @@
 #include "Actors/Level/WallTile.h"
 // KC
 #include "Config/Constants/Level.h"
-//#include "Config/Constants/Log.h"
 
 
 AWallTile::AWallTile()
 {
-    checkf( Plane, TEXT(/*KCINFO*/ "Plane is null.") );
+    checkf( Plane, TEXT("Plane is null.") );
     
     Plane->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
     Plane->SetCastShadow(true);

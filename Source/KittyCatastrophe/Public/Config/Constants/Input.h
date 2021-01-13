@@ -6,11 +6,11 @@
 
 
 namespace KC {
-namespace INPUT {
+namespace /*KC::*/ INPUT {
 
-namespace MAPPING {
+namespace /*KC::INPUT::*/ MAPPING {
 FName const TOUCH_1 = TEXT("Finger1");
-} // ::MAPPING
+} //ns KC::INPUT::MAPPING
 
-}
-}
+} //ns KC::INPUT
+} //ns KC

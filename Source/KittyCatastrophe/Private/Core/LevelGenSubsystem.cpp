@@ -14,7 +14,7 @@
 ULevelGenSubsystem::ULevelGenSubsystem()
 {
     LevelMap = CreateDefaultSubobject<ULevelMap>( TEXT("Level Map") );
-    checkf( LevelMap, TEXT(/*KCINFO*/ "Couldn't construct Level Map.") );
+    checkf( LevelMap, TEXT("Couldn't construct Level Map.") );
 }
 
 /*
@@ -48,10 +48,10 @@ bool ULevelGenSubsystem::TryLoadLevel( int32 const levelNumber )
 bool ULevelGenSubsystem::TryLoadNextLevel()
 {
     UWorld* world = GetWorld();
-    checkf( world, TEXT(/*KCINFO*/ "Couldn't get world instance.") );
+    checkf( world, TEXT("Couldn't get world instance.") );
 
     AKCGameState* gameState = Cast<AKCGameState>( world->GetGameState() );
-    checkf( gameState, TEXT(/*KCINFO*/ "Couldn't get GameState instance.") );
+    checkf( gameState, TEXT("Couldn't get GameState instance.") );
 
     int32 const nextLevelNumber = gameState->GetNextLevelNumber();
 

@@ -95,7 +95,7 @@ struct FLevelMapTileArray
 
 // ULevelMap
 //////////////////////
-UCLASS(Within=LevelGenSubsystem, Category="Map", meta=(DisplayName="Level Map", ToolTip="Decodes and then contains and operates on the data obtained from LevelMap files."))
+UCLASS(Transient, Within=LevelGenSubsystem, Category="Map", meta=(DisplayName="Level Map", ToolTip="Decodes and then contains and operates on the data obtained from LevelMap files."))
 class ULevelMap : public UObject
 {
     GENERATED_BODY()

@@ -14,14 +14,25 @@ class AWallTile;
 class UDataTable;
 
 
-UCLASS(Category="Map", ClassGroup=(Map), meta=(DisplayName="Map Point", ToolTip="Actor which contains all other components necessary in order to completely spawn one (X,Y) point on a LevelMap."))
-class KITTYCATASTROPHE_API AMapPoint : public AActor
+UCLASS(Category="Map", ClassGroup=(Map), Transient, meta=(DisplayName="Map Unit", ToolTip="Actor which contains all other components necessary in order to completely spawn one (X,Y) point on a LevelMap."))
+class KITTYCATASTROPHE_API AMapUnit : public AActor
 {
     GENERATED_BODY()
 public:
-    AMapPoint();
+    AMapUnit();
     
     void Init(
+        FIntPoint const& location,
+        TCHAR const floorTileChar,
+        bool const hasNorthWall,
+        bool const hasEastWall,
+        bool const hasSouthWall,
+        bool const hasWestWall
+    );
+    
+    void Init(
+        int32 const xLocation,
+        int32 const yLocation,
         TCHAR const floorTileChar,
         bool const hasNorthWall,
         bool const hasEastWall,
@@ -59,8 +70,12 @@ protected:
     UPROPERTY(meta=(DisplayName="WallTile Class Lookup Table", ToolTip="Contains rows of type 'LUTEntry_BPClass_WallTile'."))
     UDataTable* WallTileLUT = nullptr;
     
+    static FTransform GetFloorTransform( FIntPoint const& point );
+    static FTransform GetWallTransform( FIntPoint const& point, ECardinal const direction );
+    static FTransform GetCeilingTransform( FIntPoint const& point );
     
     void ConstructWall(
+        FIntPoint const& location,
         TSubclassOf<AWallTile> wallTileClass,
         ECardinal const direction,
         UWorld* world = nullptr
@@ -79,7 +94,27 @@ protected:
 
 // INLINE DEFINITIONS
 /////////////////////
-inline bool AMapPoint::HasWall( ECardinal const direction ) const
+
+inline void AMapUnit::Init(
+    int32 const xLocation,
+    int32 const yLocation,
+    TCHAR const floorTileChar,
+    bool const hasNorthWall,
+    bool const hasEastWall,
+    bool const hasSouthWall,
+    bool const hasWestWall
+) {
+    Init(
+        FIntPoint{ xLocation, yLocation },
+        floorTileChar,
+        hasNorthWall,
+        hasEastWall,
+        hasSouthWall,
+        hasWestWall
+    );
+}
+
+inline bool AMapUnit::HasWall( ECardinal const direction ) const
 {
     switch(direction)
     {
@@ -97,7 +132,7 @@ inline bool AMapPoint::HasWall( ECardinal const direction ) const
     }
 }
 
-inline AWallTile*& AMapPoint::GetWall( ECardinal const direction )
+inline AWallTile*& AMapUnit::GetWall( ECardinal const direction )
 {
     switch(direction)
     {

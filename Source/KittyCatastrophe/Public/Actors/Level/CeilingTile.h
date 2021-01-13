@@ -8,7 +8,7 @@
 #include "CeilingTile.generated.h"
 
 
-UCLASS(NotBlueprintable, BlueprintType, Category="Map|Tiles", ClassGroup=(Map,HealthProxy), meta=(IsBlueprintBase="false", DisplayName="Ceiling Tile", ToolTip="One grid-unit of ceiling in a Level."))
+UCLASS(NotBlueprintable, BlueprintType, Category="Map|Tiles", ClassGroup=(Map,HealthProxy), Transient, meta=(IsBlueprintBase="false", DisplayName="Ceiling Tile", ToolTip="One grid-unit of ceiling in a Level."))
 class KITTYCATASTROPHE_API ACeilingTile : public AMapTile
 {
     GENERATED_BODY()

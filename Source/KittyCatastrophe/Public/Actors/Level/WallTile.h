@@ -9,7 +9,7 @@
 #include "WallTile.generated.h"
 
 
-UCLASS(Abstract, Blueprintable, BlueprintType, Category="Map|Tiles", ClassGroup=(Map,HealthProxy), meta=(IsBlueprintBase="true", DisplayName="Wall Tile", ToolTip="One grid-unit of wall in a Level."))
+UCLASS(Abstract, Blueprintable, BlueprintType, Category="Map|Tiles", ClassGroup=(Map,HealthProxy), Transient, meta=(IsBlueprintBase="true", DisplayName="Wall Tile", ToolTip="One grid-unit of wall in a Level."))
 class KITTYCATASTROPHE_API AWallTile : public AMapTile
 {
 	GENERATED_BODY()

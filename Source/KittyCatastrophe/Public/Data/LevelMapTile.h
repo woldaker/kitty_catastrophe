@@ -8,10 +8,10 @@
 #include "Enums/EFloorTile.h"
 #include "LevelMapTile.generated.h"
 
-class AMapPoint;
+class AMapUnit;
 
 
-UCLASS(meta=(DisplayName="LevelMap Tile", ToolTip="Contains the necessary data and methods required to construct one grid point of a LevelMap."))
+UCLASS(Transient, Within=LevelMap, meta=(DisplayName="LevelMap Tile", ToolTip="Contains the necessary data and methods required to construct one grid point of a LevelMap."))
 class ULevelMapTile : public UObject
 {
     GENERATED_BODY()
@@ -74,7 +74,7 @@ protected:
     FIntPoint Coordinates = FIntPoint::NoneValue;
     
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Map", meta=(DisplayName="Actor Instance", ToolTip="The actor instance which represents this LevelMap Tile in the world, if relevant (i.e. this map tile is not empty)."))
-    AMapPoint* ActorInstance = nullptr;
+    AMapUnit* ActorInstance = nullptr;
 };
 
 

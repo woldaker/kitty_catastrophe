@@ -4,9 +4,8 @@
 // Engine
 #include "Engine/DataTable.h"
 // KC
-#include "Actors/Level/MapPoint.h"
+#include "Actors/Level/MapUnit.h"
 #include "Actors/Level/MapTile.h"
-//#include "Config/Constants/Log.h"
 #include "Utils/Log.h"
 
 
@@ -20,21 +19,21 @@ void ULevelMapTile::Init(
 ) {
     checkf(
         KC::LEVEL::MAP::IsValidPoint( point ),
-        TEXT(/*KCINFO*/ "Invalid map point (%d,%d) with which to initialize a LevelMapTile."),
+        TEXT("Invalid map unit (%d,%d) with which to initialize a LevelMapTile."),
         point.X, point.Y
     );
     
     Coordinates = point;
     checkf(
         FloorTile::IsValid( floorChar ),
-        TEXT(/*KCINFO*/ "Invalid FloorTile character '%s'."), floorChar
+        TEXT("Invalid FloorTile character '%s'."), floorChar
     );
     
     if (FloorTile::IsEmpty( floorChar ))
     {
         checkf(
             !(hasWallNorth || hasWallEast || hasWallSouth || hasWallWest),
-            TEXT(/*KCINFO*/ "Only non-empty FloorTiles can be surrounded by WallTiles.")
+            TEXT("Only non-empty FloorTiles can be surrounded by WallTiles.")
         );
     }
     
@@ -49,6 +48,7 @@ void ULevelMapTile::Init(
 bool ULevelMapTile::TrySpawn()
 {
     namespace MAPTILE = KC::LEVEL::MAP::TILE;
+    using ESpawnActorNameMode = FActorSpawnParameters::ESpawnActorNameMode;
     
     if (ActorInstance)
     {
@@ -62,35 +62,42 @@ bool ULevelMapTile::TrySpawn()
     if (FloorTile::IsAbstract( FloorChar ))
     {
         Log::Info(
-            "Skipping spawn of level actors for LevelMap Tile at ({0},{1}): this map point is empty.",
+            "Skipping spawn of level actors for LevelMap Tile at ({0},{1}): this map unit is empty.",
             Coordinates.X, Coordinates.Y
         );
         return false;
     }
     
     UWorld* world = GetWorld();
-    checkf( world, TEXT(/*KCINFO*/ "Cannot get UWorld instance.") );
+    checkf( world, TEXT("Cannot get UWorld instance.") );
     
+    FString const mapPointID = FString::Printf(
+        TEXT("MapPoint_%02d_%02d"),
+        Coordinates.X,
+        Coordinates.Y
+    );
+#if WITH_EDITOR
+    FString const mapPointName = FString::Printf(
+        TEXT("MapPoint (%d,%d)"),
+        Coordinates.X,
+        Coordinates.Y
+    );
+#endif
     FVector const spawnLoc =
     {
-        Coordinates.X * 2 * AMapTile::GetUnitExtent(),
-        Coordinates.Y * 2 * AMapTile::GetUnitExtent(),
+        Coordinates.X * AMapTile::GetUnitLength(),
+        Coordinates.Y * AMapTile::GetUnitLength(),
         0.0f
     };
     
     FRotator const spawnRot = FRotator::ZeroRotator;
     
     FActorSpawnParameters spawnParams;
+    spawnParams.Name     = *mapPointID;
+    spawnParams.NameMode = ESpawnActorNameMode::Required_ErrorAndReturnNull;
+    spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     
-    spawnParams.Name = *FString::Printf(
-        TEXT("MapPoint_%d_%d"),
-        Coordinates.X, Coordinates.Y
-    );
-    spawnParams.NameMode = FActorSpawnParameters::ESpawnActorNameMode::Requested;
-    spawnParams.SpawnCollisionHandlingOverride =
-        ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    
-    ActorInstance = world->SpawnActor<AMapPoint>(
+    ActorInstance = world->SpawnActor<AMapUnit>(
         spawnLoc,
         spawnRot,
         spawnParams
@@ -98,13 +105,19 @@ bool ULevelMapTile::TrySpawn()
     
     checkf(
         ActorInstance,
-        TEXT(/*KCINFO*/ "Actor instance for LevelMapTile (%d,%d) could not be spawned."),
+        TEXT("Actor instance for LevelMapTile (%d,%d) could not be spawned."),
         Coordinates.X, Coordinates.Y
     );
-    
+#if WITH_EDITOR
+    ActorInstance->SetActorLabel( mapPointName, false );
+#endif
     ActorInstance->Init(
+        Coordinates,
         FloorChar,
-        bHasWallNorth, bHasWallEast, bHasWallSouth, bHasWallWest
+        bHasWallNorth,
+        bHasWallEast,
+        bHasWallSouth,
+        bHasWallWest
     );
     
     return true;

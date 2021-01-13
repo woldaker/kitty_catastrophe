@@ -17,7 +17,7 @@ ECardinal Cardinal::GetDirectionTurned( ECardinal const direction, int32 const n
 {
     if (!Cardinal::IsValid( direction ))
     {
-        Log::Warn( "Direction given not valid." );
+        Log::Info( "Direction given not valid." );
         return direction;
     }
     

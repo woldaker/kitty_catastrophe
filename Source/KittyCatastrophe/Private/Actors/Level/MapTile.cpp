@@ -7,7 +7,6 @@
 #include "Engine/StaticMesh.h"
 // KC
 #include "Config/Constants/Level.h"
-//#include "Config/Constants/Log.h"
 #include "Config/Constants/Path.h"
 #include "Utils/Log.h"
 
@@ -22,16 +21,16 @@ AMapTile::AMapTile()
     // OverlapBounds is inherited from ADamageReceiver, but must be constructed here
     //   because ADamageReceiver doesn't yet know which UShapeComponent to make.
     OverlapBounds = CreateDefaultSubobject<UBoxComponent>( TEXT("Overlap Bounds") );
-    checkf( OverlapBounds, TEXT(/*KCINFO*/ "OverlapBounds is null.") );
+    checkf( OverlapBounds, TEXT("OverlapBounds is null.") );
     
     // PLANE MESH
     Plane = CreateDefaultSubobject<UStaticMeshComponent>( TEXT("Plane") );
-    checkf( Plane, TEXT(/*KCINFO*/ "Plane mesh component is null.") );
+    checkf( Plane, TEXT("Plane mesh component is null.") );
     
     //UStaticMesh* planeMesh = Cast<UStaticMesh>(
     //    FSoftObjectPath( *SM::ENGINE::BASIC_PLANE ).TryLoad()
     //);
-    //checkf( planeMesh, TEXT(/*KCINFO*/ "Couldn't create basic plane mesh.") );
+    //checkf( planeMesh, TEXT("Couldn't create basic plane mesh.") );
     
     static ConstructorHelpers::FObjectFinder<UStaticMesh> planeMesh (
         *SM::ENGINE::BASIC_PLANE

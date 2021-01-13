@@ -8,4 +8,4 @@
 
 namespace KC {
 FString const PROJECT_NAME = FApp::GetProjectName();
-}
+} //ns KC

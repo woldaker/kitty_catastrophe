@@ -6,7 +6,6 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 // KC
-//#include "Config/Constants/Log.h"
 #include "Config/Constants/ObjectChannel.h"
 #include "Config/KCDeveloperSettings.h"
 
@@ -23,11 +22,11 @@ ALure::ALure() :
     bRelevantForLevelBounds = false;
 
     Mesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT("Mesh") );
-    checkf(Mesh, TEXT(/*KCINFO*/ "Mesh instantiated to null"))
+    checkf(Mesh, TEXT("Mesh instantiated to null"))
     RootComponent = Mesh;
 
     Stimuli = CreateDefaultSubobject<AIStimulus>( TEXT("Stimuli") );
-    checkf(Stimuli, TEXT(/*KCINFO*/ "Stimuli instantiated to null"))
+    checkf(Stimuli, TEXT("Stimuli instantiated to null"))
 
     // Mesh properties
     Mesh->SetCanEverAffectNavigation( false );

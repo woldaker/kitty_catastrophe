@@ -54,7 +54,7 @@ void AKCPlayerController::OnTouchPressed()
 {
     if (!DT_BPLure)
     {
-        Log::Warn( "Nothing to do on touch pressed: Lure class LUT not defined." );
+        Log::Info( "Nothing to do on touch pressed: Lure class LUT not defined." );
         return;
     }
 
@@ -81,7 +81,7 @@ void AKCPlayerController::OnTouchPressed()
     currentLureName.RemoveSpacesInline();
     
     UKCDeveloperSettings const* CFG = GetDefault<UKCDeveloperSettings>();
-    checkf(CFG, TEXT(/*KCINFO*/ "Couldn't get DeveloperSettings."));
+    checkf(CFG, TEXT("Couldn't get DeveloperSettings."));
     
     FVector spawnLoc =
     {
@@ -108,7 +108,7 @@ void AKCPlayerController::OnTouchPressed()
     checkf(lureClass, TEXT("Lure subclass in data table is null."));
 
     UWorld* world = GetWorld();
-    checkf(world, TEXT(/*KCINFO*/ "World is null."));
+    checkf(world, TEXT("World is null."));
     
     SpawnedLure = world->SpawnActor<ALure>( lureClass, spawnLoc, spawnRot );
     if (!SpawnedLure)
@@ -132,7 +132,7 @@ void AKCPlayerController::UpdateSpawnLocation()
 {
     if (!IsValid( SpawnedLure ))
     {
-        Log::Warn( "Spawned lure cannot be moved because it no longer exists." );
+        Log::Info( "Spawned lure cannot be moved because it no longer exists." );
         return;
     }
 
@@ -144,12 +144,12 @@ void AKCPlayerController::UpdateSpawnLocation()
             hitResult
         )
     ) {
-        Log::Warn( "Couldn't get hit result under touch input drag." );
+        Log::Info( "Couldn't get hit result under touch input drag." );
         return;
     }
 
     UKCDeveloperSettings const* CFG = GetDefault<UKCDeveloperSettings>();
-    checkf(CFG, TEXT(/*KCINFO*/ "Couldn't get DeveloperSettings."));
+    checkf(CFG, TEXT("Couldn't get DeveloperSettings."));
     
     SpawnedLure->SetActorLocation(
         FVector{

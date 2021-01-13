@@ -5,7 +5,6 @@
 #include "Components/ShapeComponent.h"
 // KC
 #include "Config/Constants/Level.h"
-//#include "Config/Constants/Log.h"
 #include "Config/Constants/ObjectChannel.h"
 
 
@@ -14,7 +13,7 @@ void ADamageReceiver::InitOverlapBounds()
     namespace COLLISION_CHANNEL = KC::OBJECT_CHANNEL::COLLISION;
     checkf(
         OverlapBounds,
-        TEXT(/*KCINFO*/ "OverlapBounds must be constructed before calling this method.")
+        TEXT("OverlapBounds must be constructed before calling this method.")
     );
     
     OverlapBounds->bDrawOnlyIfSelected = true;

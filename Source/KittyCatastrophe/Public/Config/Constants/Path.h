@@ -23,6 +23,7 @@ FString const UI               = ROOT + TEXT("UI/");
 FString const ENGINE    = CORE   + TEXT("Engine/");
 FString const LEVELMAPS = LEVELS + TEXT("Maps/");
 
+
 // MARK: Add new BP class info here
 namespace /*KC::PATH::*/ ASSET {
 FString const ROOT = TEXT("/Game/") + PATH::ROOT;
@@ -33,13 +34,13 @@ FString ConstructPath(
     FString const& className
 );
 
+
 namespace /*KC::PATH::ASSET::*/ DATATABLE {
 constexpr TCHAR const* TYPENAME = TEXT("DataTable");
 
+constexpr TCHAR const*      LURE = TEXT("DT_BPClass_Lure");
 constexpr TCHAR const* FLOORTILE = TEXT("DT_BPClass_FloorTile");
 constexpr TCHAR const*  WALLTILE = TEXT("DT_BPClass_WallTile");
-
-constexpr TCHAR const* LURE  = TEXT("DT_BPClass_Lure");
 
 enum class /*KC::PATH::ASSET::DATATABLE::*/ TYPE : uint8
 {
@@ -73,6 +74,7 @@ enum class /*KC::PATH::ASSET::STATIC_MESH::*/ TYPE : uint8
 FString ClassName( TYPE const base );
 FString ConstructPath( TYPE const base );
 
+
 namespace /*KC::PATH::ASSET::STATIC_MESH::*/ ENGINE {
 FString const BASIC_PLANE = ASSET::ConstructPath(
     STATIC_MESH::TYPENAME,
@@ -80,7 +82,9 @@ FString const BASIC_PLANE = ASSET::ConstructPath(
     TEXT("Plane")
 );
 } //ns KC::PATH::ASSET::STATIC_MESH::ENGINE
+
 } //ns KC::PATH::ASSET::STATIC_MESH
 } //ns KC::PATH::ASSET
+
 } //ns KC::PATH
 } //ns KC

@@ -8,7 +8,7 @@
 #include "FloorTile.generated.h"
 
 
-UCLASS(Abstract, Blueprintable, BlueprintType, Category="Map|Tiles", ClassGroup=(Map,HealthProxy), meta=(IsBlueprintBase="true", DisplayName="Floor Tile", ToolTip="One grid-unit of floor in a Level."))
+UCLASS(Abstract, Blueprintable, BlueprintType, Category="Map|Tiles", ClassGroup=(Map,HealthProxy), Transient, meta=(IsBlueprintBase="true", DisplayName="Floor Tile", ToolTip="One grid-unit of floor in a Level."))
 class KITTYCATASTROPHE_API AFloorTile : public AMapTile
 {
     GENERATED_BODY()

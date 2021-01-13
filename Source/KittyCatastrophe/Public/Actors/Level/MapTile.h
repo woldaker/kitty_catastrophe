@@ -11,7 +11,7 @@
 class UStaticMeshComponent;
 
 
-UCLASS(Abstract, NotBlueprintable, BlueprintType, Category="Map|Tiles", ClassGroup=(Map,HealthProxy), meta=(IsBlueprintBase="false", DisplayName="Map Tile", ToolTip="One tile of the map, either a floor, wall, or ceiling, which occupies 1 map grid unit."))
+UCLASS(Abstract, NotBlueprintable, BlueprintType, Category="Map|Tiles", ClassGroup=(Map,HealthProxy), Transient, meta=(IsBlueprintBase="false", DisplayName="Map Tile", ToolTip="One tile of the map, either a floor, wall, or ceiling, which occupies 1 map grid unit."))
 class KITTYCATASTROPHE_API AMapTile : public ADamageReceiver
 {
 	GENERATED_BODY()
@@ -19,7 +19,10 @@ public:
     AMapTile();
     
     UFUNCTION(BlueprintCallable, Category="Map|Constants", meta=(DisplayName="Get Unit Extent", ToolTip="Returns the extent of the Plane mesh.  In other words, the shortest distance from the middle of the plane to one of its edges."))
-    static UPARAM(DisplayName="Unit Length") float GetUnitExtent();
+    static UPARAM(DisplayName="Unit Extent") float GetUnitExtent();
+    
+    UFUNCTION(BlueprintCallable, Category="Map|Constants", meta=(DisplayName="Get Unit Length", ToolTip="Returns the length of the Plane mesh.  In other words, twice its Unit Extent."))
+    static UPARAM(DisplayName="Unit Length") float GetUnitLength();
     
     UFUNCTION(BlueprintCallable, Category="Map|State", meta=(DisplayName="Is Unit Extent Set", ToolTip="Returns true if the static MapTile::UnitExtent property has been initialized."))
     static UPARAM(DisplayName="Is Defined") bool IsUnitExtentSet();
@@ -36,9 +39,10 @@ protected:
 
 // INLINE DEFINITIONS
 inline float AMapTile::GetUnitExtent()
-{
-    return AMapTile::UnitExtent;
-}
+{ return AMapTile::UnitExtent; }
+
+inline float AMapTile::GetUnitLength()
+{ return (AMapTile::UnitExtent * 2.0f); }
 
 inline bool AMapTile::IsUnitExtentSet()
 {

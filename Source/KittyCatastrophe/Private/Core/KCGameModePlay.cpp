@@ -2,7 +2,6 @@
 
 #include "Core/KCGameModePlay.h"
 // KC
-//#include "Config/Constants/Log.h"
 #include "Core/KCGameState.h"
 #include "Core/KCHUD_InGame.h"
 #include "Core/KCPlayerController.h"
@@ -33,10 +32,10 @@ void AKCGameModePlay::InitGameState()
     Super::InitGameState();
 
     UWorld* world = GetWorld();
-    checkf(world, TEXT(/*KCINFO*/ "World instance is null."));
+    checkf(world, TEXT("World instance is null."));
     
     ULevelGenSubsystem* levelGenerator = world->GetSubsystem<ULevelGenSubsystem>();
-    checkf(levelGenerator, TEXT(/*KCINFO*/ "Level Generator is null."));
+    checkf(levelGenerator, TEXT("Level Generator is null."));
     
     bLevelGenerated = levelGenerator->TryLoadNextLevel();
 }

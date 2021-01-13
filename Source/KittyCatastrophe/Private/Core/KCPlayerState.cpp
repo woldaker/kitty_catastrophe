@@ -9,7 +9,7 @@
 AKCPlayerState::AKCPlayerState()
 {
     Inventory = CreateDefaultSubobject<UInventory>(TEXT("Inventory"));
-    checkf(Inventory, TEXT(/*KCINFO*/ "error constructing Inventory."));
+    checkf(Inventory, TEXT("error constructing Inventory."));
 }
 
 
